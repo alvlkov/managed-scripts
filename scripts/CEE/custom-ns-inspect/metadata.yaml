@@ -1,0 +1,63 @@
+file: script.sh
+name: custom-ns-inspect
+description: custom namespace must gather script
+author: Alex Volkov
+allowedGroups: 
+  - CEE
+
+rbac:
+  clusterRoleRules:
+    - apiGroups:
+        - ""
+      resources:
+        - "namespaces"
+      verbs:
+        - "get"
+    - apiGroups:
+        - ""
+      resources:
+        - "pods"
+        - "pods/log"
+        - "events"
+        - "replicationcontrollers"
+      verbs:
+        - "get"
+        - "list"
+    - apiGroups:
+        - "apps"
+      resources:
+        - "deployments"
+        - "replicasets"
+      verbs:
+        - "get"
+        - "list"
+    - apiGroups:
+        - "networking.k8s.io"
+      resources:
+        - "ingresses"
+      verbs:
+        - "get"
+        - "list"
+    - apiGroups:
+        - "route.openshift.io"
+      resources:
+        - "routes"
+      verbs:
+        - "get"
+        - "list"
+    - apiGroups:
+        - ""
+      resources:
+        - "services"
+        - "persistentvolumeclaims"
+        - "configmaps"
+      verbs:
+        - "get"
+        - "list"
+
+envs:
+  - key: "NAMESPACE"
+    description: "Custom namespace name"
+    optional: false
+language: bash
+customerDataAccess: true
