@@ -10,9 +10,10 @@ The script will upload the compressed dump to the [SFTP](https://access.redhat.c
 ## Usage
 
 Parameters:
-- NAMESPACE: custom namespace name.
+- NAMESPACE: customer namespace name.
+- CASEID: customer case identifier
 
 In the management cluster:
 ```bash
-ocm backplane managedjob create CEE/hs-must-gather -p NAMESPACE=my-custom-ns 
+ocm backplane managedjob create CEE/hs-must-gather -p NAMESPACE=my-custom-ns -p CASEID=custom-case-id
 ```

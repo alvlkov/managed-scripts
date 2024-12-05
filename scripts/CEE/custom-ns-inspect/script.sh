@@ -4,9 +4,20 @@ set -e
 set -o nounset
 set -o pipefail
 
+### Check the correct number of arguments is provided
+if [ "$#" -ne 2 ]; then
+  echo "Usage: $0 <namespace> <case_number>"
+fi
+
 # Define the project to gather information from
 if [[ -z "${NAMESPACE:-}" ]]; then
-    echo "Usage: $0 <NAMESPACE>"
+    echo 'Variable NAMESPACE cannot be blank'
+    exit 1
+fi
+
+# Define the project to gather information from
+if [[ -z "${CASEID:-}" ]]; then
+    echo 'Variable CASE_NUMBER cannot be blank'
     exit 1
 fi
 
@@ -16,7 +27,7 @@ source /managed-scripts/lib/sftp_upload/lib.sh
 # Define expected values
 DUMP_DIR="/tmp/${NAMESPACE}"
 TODAY=$(date -u +%Y%m%d)
-TARBALL_NAME="${TODAY}_${NAMESPACE}_dump.tar.gz"
+TARBALL_NAME="${CASEID}_${TODAY}_${NAMESPACE}_dump.tar.gz"
 TARBALL_PATH="${DUMP_DIR}/${TARBALL_NAME}"
 
 # Function to check if the user is logged into OpenShift

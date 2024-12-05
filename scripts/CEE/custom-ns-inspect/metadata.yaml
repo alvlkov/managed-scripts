@@ -57,7 +57,10 @@ rbac:
 
 envs:
   - key: "NAMESPACE"
-    description: "Custom namespace name"
+    description: "Customer namespace name"
+    optional: false
+  - key: "CASEID"
+    description: "Customer case identifier"
     optional: false
 language: bash
 customerDataAccess: true
