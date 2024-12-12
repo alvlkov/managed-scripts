@@ -1,12 +1,42 @@
 file: script.sh
 name: custom-ns-inspect
-description: custom namespace must gather script
+shortDescription: Collects custom namespace inspect and produces tar file
+Description: |
+
+  Collect customer namespace relevant information and send it to the case SFTP server and ticket.
+
+  This script will only work if a secret exists in the managed scripts namespace that contains a valid single-use
+  SFTP token.
+
+  How to use:
+    0. Get the case number from your support case. It is the case_id from this URL format. https://access.redhat.com/support/cases/#/case/{case_id}/discussion
+    1. Have your username and password you use to login to access.redhat.com ready.
+    2. Check whether your user is internal or not. This will be true or false. Run `curl -u username https://access.redhat.com/hydra/rest/contacts/sso/username | jq  .isInternal` with the username and password from step 1.
+    2. Run `curl -u username https://access.redhat.com/hydra/rest/v1/sftp/token/upload/temporary` with your username and password from Step 1.
+    3. Add the token returned in Step 2 to this secret (and delete it if it already exists in the namespace):
+      oc create secret generic ns-inspect-creds --from-literal=username=username_from_step_1 --from-literal=internal=result_from_step_2 --from-literal=password=token_from_step_3  --from-literal=caseid=support_case_number_step_0 -n openshift-backplane-managed-scripts
+    4. Run the collector on the node in question:
+      ocm backplane managedjob create CEE/custom-ns-inspect -p NAMESPACE=custom-app-ns
+    5. If the job completes, a tar file should be available at your case URL.
+
+    See https://source.redhat.com/groups/public/openshiftplatformsre/wiki/how_to_use_the_must_gather_operator for inspiration and reference.
+
 author: Alex Volkov
-allowedGroups: 
+allowedGroups:
+  - SREP
   - CEE
 
 rbac:
   clusterRoleRules:
+    - apiGroups:
+        - ""
+      resources:
+        - "pods"
+        - "pods/exec"
+      verbs:
+        - "create"
+        - "get"
+        - "delete"
     - apiGroups:
         - ""
       resources:
@@ -20,9 +50,18 @@ rbac:
         - "pods/log"
         - "events"
         - "replicationcontrollers"
+        - "services"
+        - "persistentvolumeclaims"
+        - "configmaps"
       verbs:
         - "get"
         - "list"
+    - apiGroups:
+        - "security.openshift.io"
+      verbs:
+        - "*"
+      resources:
+        - "securitycontextconstraints"
     - apiGroups:
         - "apps"
       resources:
@@ -48,19 +87,15 @@ rbac:
     - apiGroups:
         - ""
       resources:
-        - "services"
-        - "persistentvolumeclaims"
-        - "configmaps"
+        - "secrets"
       verbs:
         - "get"
-        - "list"
-
+        - "delete"
+      resourceNames:
+        - "ns-inspect-creds"
 envs:
   - key: "NAMESPACE"
     description: "Customer namespace name"
-    optional: false
-  - key: "CASEID"
-    description: "Customer case identifier"
     optional: false
 language: bash
 customerDataAccess: true
