@@ -1,9 +1,9 @@
 file: script.sh
 name: custom-ns-inspect
-shortDescription: Collects custom namespace inspect and produces tar file
+shortDescription: Collects custom namespace inspect and attach it to case
 Description: |
 
-  Collect customer namespace relevant information and send it to the case SFTP server and ticket.
+  Collect customer namespace relevant information by running $ oc adm inspect ns/namespace command and send it to the case SFTP server and ticket.
 
   This script will only work if a secret exists in the managed scripts namespace that contains a valid single-use
   SFTP token.
@@ -33,57 +33,17 @@ rbac:
       resources:
         - "pods"
         - "pods/exec"
+        - "pods/log"
       verbs:
         - "create"
         - "get"
         - "delete"
-    - apiGroups:
-        - ""
-      resources:
-        - "namespaces"
-      verbs:
-        - "get"
-    - apiGroups:
-        - ""
-      resources:
-        - "pods"
-        - "pods/log"
-        - "events"
-        - "replicationcontrollers"
-        - "services"
-        - "persistentvolumeclaims"
-        - "configmaps"
-      verbs:
-        - "get"
-        - "list"
     - apiGroups:
         - "security.openshift.io"
       verbs:
         - "*"
       resources:
         - "securitycontextconstraints"
-    - apiGroups:
-        - "apps"
-      resources:
-        - "deployments"
-        - "replicasets"
-      verbs:
-        - "get"
-        - "list"
-    - apiGroups:
-        - "networking.k8s.io"
-      resources:
-        - "ingresses"
-      verbs:
-        - "get"
-        - "list"
-    - apiGroups:
-        - "route.openshift.io"
-      resources:
-        - "routes"
-      verbs:
-        - "get"
-        - "list"
     - apiGroups:
         - ""
       resources:
